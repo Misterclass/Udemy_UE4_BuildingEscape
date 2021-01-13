@@ -10,7 +10,7 @@ UWorldPosition::UWorldPosition()
 	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 
-	// ...
+	UE_LOG(LogTemp, Warning, TEXT("Hello World!"));
 }
 
 
@@ -19,7 +19,8 @@ void UWorldPosition::BeginPlay()
 {
 	Super::BeginPlay();
 
-	// ...
+	UE_LOG(LogTemp, Error, TEXT("I started the play!"));
+	UE_LOG(LogTemp, Display, TEXT("This is just message~~!"));
 	
 }
 
