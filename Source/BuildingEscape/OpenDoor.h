@@ -12,10 +12,6 @@ class BUILDINGESCAPE_API UOpenDoor : public UActorComponent
 {
 	GENERATED_BODY()
 
-private:
-	float TargetYaw = 90.f;
-	float CurrentYaw = 0.f;
-
 public:	
 	// Sets default values for this component's properties
 	UOpenDoor();
@@ -28,4 +24,8 @@ public:
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
+private:
+	float TargetYaw;
+	float CurrentYaw;
+	float InitialYaw;
 };
