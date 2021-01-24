@@ -1,7 +1,11 @@
 // Copyright Mister Class 2020
 
-
+#include "GameFramework/PlayerController.h"
+#include "Engine/World.h"
 #include "Grabber.h"
+
+//For code readability with out params
+#define OUT
 
 // Sets default values for this component's properties
 UGrabber::UGrabber()
@@ -29,6 +33,19 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	// ...
+	//Get player viewpoint
+	FVector PlayerViewPointLocation;
+	FRotator PlayerViewPointRotation;
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(		//OUT is used only for readability
+		OUT PlayerViewPointLocation, 
+		OUT PlayerViewPointRotation
+	);
+
+	UE_LOG(LogTemp, Warning, TEXT("Player view point location is %s"), 
+		*PlayerViewPointLocation.ToString()
+	);
+	UE_LOG(LogTemp, Warning, TEXT("Player view point rotation is %s"), 
+		*PlayerViewPointRotation.ToString()
+	);
 }
 
