@@ -11,7 +11,7 @@ UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
 class BUILDINGESCAPE_API UOpenDoor : public UActorComponent
 {
 	GENERATED_BODY()
-
+	
 public:	
 	// Sets default values for this component's properties
 	UOpenDoor();
@@ -42,4 +42,15 @@ private:
 
 	UPROPERTY(EditAnywhere)
 		AActor* ActorThatOpen;
+
+	float DoorLastOpened = 0.f;
+
+	UPROPERTY(EditAnywhere)
+		float DoorOpenDelay = .5f;
+	
+	UPROPERTY(EditAnywhere)
+		float DoorOpenSpeed = 2.f;
+	
+	UPROPERTY(EditAnywhere)
+		float DoorCloseSpeed = 2.f;
 };
