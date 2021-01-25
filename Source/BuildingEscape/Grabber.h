@@ -16,6 +16,7 @@ class BUILDINGESCAPE_API UGrabber : public UActorComponent
 private:
 	float Reach = 100.f;
 	UPhysicsHandleComponent* PhysicsHandle = nullptr;
+	UInputComponent* InputComponent = nullptr;
 
 public:	
 	// Sets default values for this component's properties
@@ -28,5 +29,6 @@ protected:
 public:	
 	// Called every frame
 	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
+	void Grab();
 
 };

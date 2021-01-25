@@ -27,6 +27,7 @@ void UGrabber::BeginPlay()
 	UE_LOG(LogTemp, Warning, TEXT("Grabber is ready!"));
 
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+	InputComponent = GetOwner()->FindComponentByClass<UInputComponent>();
 
 	if(PhysicsHandle)
 	{
@@ -35,6 +36,16 @@ void UGrabber::BeginPlay()
 	else
 	{
 		UE_LOG(LogTemp, Error, TEXT("Blueprint %s must have PhysicsHandle component!"), *GetOwner()->GetName());
+	}
+
+	if (InputComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Blueprint %s has Input component!"), *GetOwner()->GetName());
+		InputComponent->BindAction("Grab", EInputEvent::IE_Pressed, this, &UGrabber::Grab);
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Blueprint %s must have Input component!"), *GetOwner()->GetName());
 	}
 }
 
@@ -99,3 +110,8 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 	);*/
 }
 
+
+void UGrabber::Grab()
+{
+	UE_LOG(LogTemp, Warning, TEXT("Grab pressed!!!!"));
+}
