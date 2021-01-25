@@ -25,7 +25,17 @@ void UGrabber::BeginPlay()
 	Super::BeginPlay();
 
 	UE_LOG(LogTemp, Warning, TEXT("Grabber is ready!"));
-	
+
+	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
+
+	if(PhysicsHandle)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Blueprint %s has PhysicsHandle component!"), *GetOwner()->GetName());
+	}
+	else
+	{
+		UE_LOG(LogTemp, Error, TEXT("Blueprint %s must have PhysicsHandle component!"), *GetOwner()->GetName());
+	}
 }
 
 
