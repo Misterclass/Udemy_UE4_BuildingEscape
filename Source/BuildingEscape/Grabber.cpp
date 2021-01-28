@@ -29,11 +29,8 @@ void UGrabber::BeginPlay()
 void UGrabber::FindPhysicsHandleComponent()
 {
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
-	if(PhysicsHandle)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Blueprint %s has PhysicsHandle component!"), *GetOwner()->GetName());
-	}
-	else
+	
+	if(PhysicsHandle == nullptr)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Blueprint %s must have PhysicsHandle component!"), *GetOwner()->GetName());
 	}
@@ -46,7 +43,6 @@ void UGrabber::SetupInputActions()
 	//Bind Actions for grabbing
 	if (InputComponent)
 	{
-		UE_LOG(LogTemp, Warning, TEXT("Blueprint %s has Input component!"), *GetOwner()->GetName());
 		InputComponent->BindAction("Grab", EInputEvent::IE_Pressed, this, &UGrabber::Grab);
 		InputComponent->BindAction("Grab", EInputEvent::IE_Released, this, &UGrabber::Release);
 	}
@@ -63,23 +59,24 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 
 	if (PhysicsHandle->GrabbedComponent)
 	{
-		//Get player viewpoint
-		FVector PlayerViewPointLocation;
-		FRotator PlayerViewPointRotation;
-
-		GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(		//OUT is used only for readability
-			OUT PlayerViewPointLocation,
-			OUT PlayerViewPointRotation
-		);
-
-		//Calculate line trace end by players look
-		FVector LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
-		
 		//Move object we are holding
-		PhysicsHandle->SetTargetLocation(LineTraceEnd);
+		PhysicsHandle->SetTargetLocation(GetPlayersReach());
 	}
 	
-	//TODO move object, if he's attached to physics handle
+}
+
+FVector UGrabber::GetPlayersReach() const
+{
+	//Get player viewpoint
+	FVector PlayerViewPointLocation;
+	FRotator PlayerViewPointRotation;
+
+	GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(		//OUT is used only for readability
+		OUT PlayerViewPointLocation,
+		OUT PlayerViewPointRotation
+	);
+
+	return PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
 }
 
 void UGrabber::Grab()
@@ -105,6 +102,22 @@ void UGrabber::Grab()
 
 FHitResult UGrabber::FindActorInReach()
 {
+	FHitResult HitResult;
+	
+	//Trace actor by object type
+	GetWorld()->LineTraceSingleByObjectType(
+		OUT HitResult,
+		GetPlayerWorldPosition(),
+		GetPlayersReach(),
+		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
+		FCollisionQueryParams(FName(TEXT("")), false, GetOwner())
+	);
+
+	return HitResult;
+}
+
+FVector UGrabber::GetPlayerWorldPosition() const
+{
 	//Get player viewpoint
 	FVector PlayerViewPointLocation;
 	FRotator PlayerViewPointRotation;
@@ -114,33 +127,11 @@ FHitResult UGrabber::FindActorInReach()
 		OUT PlayerViewPointRotation
 	);
 
-	//Calculate line trace end by players look
-	FVector LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
-
-	//Trace actor by object type
-	FHitResult HitResult;
-	GetWorld()->LineTraceSingleByObjectType(
-		OUT HitResult,
-		PlayerViewPointLocation,
-		LineTraceEnd,
-		FCollisionObjectQueryParams(ECollisionChannel::ECC_PhysicsBody),
-		FCollisionQueryParams(FName(TEXT("")), false, GetOwner())
-	);
-
-	//Second case
-	AActor* HitActor = HitResult.GetActor();
-	if (HitActor)
-	{
-		UE_LOG(LogTemp, Warning, TEXT("Line trace object is %s"), *HitActor->GetName());
-	}
-
-	return HitResult;
+	return PlayerViewPointLocation;
 }
 
 void UGrabber::Release()
 {
-	UE_LOG(LogTemp, Warning, TEXT("The key is released!!"));
-
 	if (PhysicsHandle->GrabbedComponent)
 	{
 		PhysicsHandle->ReleaseComponent();

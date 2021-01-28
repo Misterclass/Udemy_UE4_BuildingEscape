@@ -40,5 +40,11 @@ private:
 	void FindPhysicsHandleComponent();
 	void SetupInputActions();
 
+	//Return line trace end
+	FVector GetPlayersReach() const;
+
+	//Get player's world location
+	FVector GetPlayerWorldPosition()const;
+
 	FHitResult FindActorInReach();
 };
