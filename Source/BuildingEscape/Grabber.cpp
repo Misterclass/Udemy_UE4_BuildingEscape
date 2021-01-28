@@ -61,6 +61,24 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
+	if (PhysicsHandle->GrabbedComponent)
+	{
+		//Get player viewpoint
+		FVector PlayerViewPointLocation;
+		FRotator PlayerViewPointRotation;
+
+		GetWorld()->GetFirstPlayerController()->GetPlayerViewPoint(		//OUT is used only for readability
+			OUT PlayerViewPointLocation,
+			OUT PlayerViewPointRotation
+		);
+
+		//Calculate line trace end by players look
+		FVector LineTraceEnd = PlayerViewPointLocation + PlayerViewPointRotation.Vector() * Reach;
+		
+		//Move object we are holding
+		PhysicsHandle->SetTargetLocation(LineTraceEnd);
+	}
+	
 	//TODO move object, if he's attached to physics handle
 }
 
@@ -68,8 +86,21 @@ void UGrabber::Grab()
 {
 	UE_LOG(LogTemp, Warning, TEXT("Grab pressed!!!!"));
 
-	FindActorInReach();
-	//TODO attach object to physics handle
+	FHitResult HitResult = FindActorInReach();
+	UPrimitiveComponent* ComponentToGrab = HitResult.GetComponent();
+	FVector LocationToGrab = HitResult.Location;
+
+	//Grab our Component!
+	if (HitResult.GetActor())
+	{
+		
+		PhysicsHandle->GrabComponentAtLocation
+		(
+			ComponentToGrab, 
+			NAME_None, 
+			LocationToGrab
+		);
+	}
 }
 
 FHitResult UGrabber::FindActorInReach()
@@ -110,5 +141,8 @@ void UGrabber::Release()
 {
 	UE_LOG(LogTemp, Warning, TEXT("The key is released!!"));
 
-	//TODO release physics handle
+	if (PhysicsHandle->GrabbedComponent)
+	{
+		PhysicsHandle->ReleaseComponent();
+	}
 }
