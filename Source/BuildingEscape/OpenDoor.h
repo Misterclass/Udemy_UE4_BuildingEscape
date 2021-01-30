@@ -35,6 +35,9 @@ private:
 	float InitialYaw;
 
 	UPROPERTY(EditAnywhere)
+		float LimitMass = 60.f;
+
+	UPROPERTY(EditAnywhere)
 		float TargetYaw = 90.f;
 
 	UPROPERTY(EditAnywhere)
@@ -53,4 +56,6 @@ private:
 	
 	UPROPERTY(EditAnywhere)
 		float DoorCloseSpeed = 2.f;
+
+	float TotalMassOfActors() const;
 };
