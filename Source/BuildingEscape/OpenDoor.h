@@ -41,10 +41,7 @@ private:
 		float TargetYaw = 90.f;
 
 	UPROPERTY(EditAnywhere)
-		ATriggerVolume* PressurePlate;
-
-	UPROPERTY(EditAnywhere)
-		AActor* ActorThatOpen;
+		ATriggerVolume* PressurePlate = nullptr;
 
 	float DoorLastOpened = 0.f;
 

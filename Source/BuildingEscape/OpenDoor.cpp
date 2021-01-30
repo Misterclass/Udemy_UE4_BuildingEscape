@@ -33,9 +33,7 @@ void UOpenDoor::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s has the open door component on it, but no pressure plate set."), *GetOwner()->GetName());
 	}
-
-	//Get our player pawn
-	ActorThatOpen = GetWorld()->GetFirstPlayerController()->GetPawn();
+	
 }
 
 
@@ -67,6 +65,7 @@ void UOpenDoor::OpenDoor(float DeltaTime)
 
 	//CurrentYaw = FMath::Lerp(CurrentYaw, TargetYaw, DeltaTime);
 	//CurrentYaw = FMath::FInterpConstantTo(CurrentYaw, TargetYaw, DeltaTime, 45.f);
+	
 	CurrentYaw = FMath::FInterpTo(CurrentYaw, TargetYaw, DeltaTime, DoorOpenSpeed);
 	FRotator OpenRotator(0.f, CurrentYaw, 0.f);
 	GetOwner()->SetActorRotation(OpenRotator);
@@ -88,7 +87,12 @@ float UOpenDoor::TotalMassOfActors() const
 
 	//Find all overlapping components
 	TArray<UPrimitiveComponent*> OverlappingComponents;
-	PressurePlate->GetOverlappingComponents(OUT OverlappingComponents);
+
+	if (PressurePlate) PressurePlate->GetOverlappingComponents(OUT OverlappingComponents);
+	else
+	{
+		UE_LOG(LogTemp, Warning, TEXT("%s has the open door component on it, but no pressure plate set."), *GetOwner()->GetName());
+	}
 
 	for (UPrimitiveComponent* Component : OverlappingComponents)
 	{

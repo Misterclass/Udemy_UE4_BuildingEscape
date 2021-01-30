@@ -30,7 +30,7 @@ void UGrabber::FindPhysicsHandleComponent()
 {
 	PhysicsHandle = GetOwner()->FindComponentByClass<UPhysicsHandleComponent>();
 	
-	if(PhysicsHandle == nullptr)
+	if(!PhysicsHandle)
 	{
 		UE_LOG(LogTemp, Error, TEXT("Blueprint %s must have PhysicsHandle component!"), *GetOwner()->GetName());
 	}
@@ -57,7 +57,7 @@ void UGrabber::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompone
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 
-	if (PhysicsHandle->GrabbedComponent)
+	if (PhysicsHandle && PhysicsHandle->GrabbedComponent)
 	{
 		//Move object we are holding
 		PhysicsHandle->SetTargetLocation(GetPlayersReach());
@@ -90,6 +90,8 @@ void UGrabber::Grab()
 	//Grab our Component!
 	if (HitResult.GetActor())
 	{
+		//Protect yourself from crash
+		if (!PhysicsHandle) return;
 		
 		PhysicsHandle->GrabComponentAtLocation
 		(
@@ -132,7 +134,7 @@ FVector UGrabber::GetPlayerWorldPosition() const
 
 void UGrabber::Release()
 {
-	if (PhysicsHandle->GrabbedComponent)
+	if (PhysicsHandle && PhysicsHandle->GrabbedComponent)
 	{
 		PhysicsHandle->ReleaseComponent();
 	}
