@@ -33,6 +33,8 @@ void UOpenDoor::BeginPlay()
 	{
 		UE_LOG(LogTemp, Warning, TEXT("%s has the open door component on it, but no pressure plate set."), *GetOwner()->GetName());
 	}
+
+	FindAudioComponent();
 	
 }
 
@@ -69,6 +71,12 @@ void UOpenDoor::OpenDoor(float DeltaTime)
 	CurrentYaw = FMath::FInterpTo(CurrentYaw, TargetYaw, DeltaTime, DoorOpenSpeed);
 	FRotator OpenRotator(0.f, CurrentYaw, 0.f);
 	GetOwner()->SetActorRotation(OpenRotator);
+
+	if (AudioComponent && !IsOpened)
+	{
+		AudioComponent->Play();
+		IsOpened = true;
+	}
 }
 
 void UOpenDoor::CloseDoor(float DeltaTime)
@@ -79,6 +87,13 @@ void UOpenDoor::CloseDoor(float DeltaTime)
 	CurrentYaw = FMath::FInterpTo(CurrentYaw, InitialYaw, DeltaTime, DoorCloseSpeed);
 	FRotator OpenRotator(0.f, CurrentYaw, 0.f);
 	GetOwner()->SetActorRotation(OpenRotator);
+
+	if (AudioComponent && IsOpened)
+	{
+		AudioComponent->Play();
+		IsOpened = false;
+		//AudioComponent->Deactivate();
+	}
 }
 
 float UOpenDoor::TotalMassOfActors() const
@@ -100,5 +115,15 @@ float UOpenDoor::TotalMassOfActors() const
 	}
 	
 	return TotalMass;
+}
+
+void UOpenDoor::FindAudioComponent()
+{
+	AudioComponent = GetOwner()->FindComponentByClass<UAudioComponent>();
+
+	if(!AudioComponent)
+	{
+		UE_LOG(LogTemp, Warning, TEXT("Actor %s must have an audio component!"), *GetOwner()->GetName());
+	}
 }
 

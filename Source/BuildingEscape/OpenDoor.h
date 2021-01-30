@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Components/ActorComponent.h"
+#include "Components/AudioComponent.h"
 #include "Engine/TriggerVolume.h"
 #include "OpenDoor.generated.h"
 
@@ -54,5 +55,14 @@ private:
 	UPROPERTY(EditAnywhere)
 		float DoorCloseSpeed = 2.f;
 
+	bool IsOpened = false;
+
+	UPROPERTY()
+		UAudioComponent* AudioComponent = nullptr;
+
+	//Get sum mass of actors
 	float TotalMassOfActors() const;
+
+	//Get audio component for playing
+	void FindAudioComponent();
 };
